@@ -4,6 +4,7 @@ class Position {
     constructor(x, y) {
         this.x = x
         this.y = y
+        this.parent = null
     }
 }
 
@@ -28,14 +29,20 @@ function isEqual(a, b) {
 
 function bfs(start, target) {
     const frontier = [start]
+    let stage = 0
 
     while (frontier.length) {
+        console.log(frontier)
         const current = frontier.pop(0)
         matrix[current.x][current.y] = 1
 
-        console.log(frontier)
-
-        if (isEqual(current, target)) return true
+        if (isEqual(current, target)) {
+            let temp = current
+            while (temp) {
+                temp = temp.parent
+            }
+            return stage
+        }
 
         const i = current.x
         const j = current.y
@@ -47,13 +54,17 @@ function bfs(start, target) {
             new Position(i - 1, j + 2),
             new Position(i + 2, j - 1),
             new Position(i + 2, j + 1),
-            new Position(i + 2, j + 1),
-            new Position(i + 1, j - 1),
-            new Position(i + 1, j + 1),
+            new Position(i + 1, j - 2),
+            new Position(i + 1, j + 2),
         ]
 
         for (p of possiblePoses)
-            if (!isOutOfBounds(p) && !matrix[p.x][p.y]) frontier.push(p)
+            if (!isOutOfBounds(p) && !matrix[p.x][p.y]) {
+                p.parent = current
+                frontier.push(p)
+            }
+
+        stage++
     }
 }
 
@@ -70,4 +81,4 @@ function knightMoves(current, target) {
     return result
 }
 
-console.log(knightMoves({ x: 2, y: 3 }, { x: 2, y: 6 }))
+console.log(knightMoves({ x: 0, y: 0 }, { x: 1, y: 2 }))
