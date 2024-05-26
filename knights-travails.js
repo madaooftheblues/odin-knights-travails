@@ -5,6 +5,7 @@ class Position {
         this.x = x
         this.y = y
         this.parent = null
+        this.stage = 0
     }
 }
 
@@ -29,19 +30,19 @@ function isEqual(a, b) {
 
 function bfs(start, target) {
     const frontier = [start]
-    let stage = 0
 
     while (frontier.length) {
-        console.log(frontier)
-        const current = frontier.pop(0)
+        const current = frontier.shift()
         matrix[current.x][current.y] = 1
 
         if (isEqual(current, target)) {
+            const path = []
             let temp = current
             while (temp) {
+                path.push([temp.x, temp.y])
                 temp = temp.parent
             }
-            return stage
+            return { steps: current.stage, path: path.reverse() }
         }
 
         const i = current.x
@@ -61,10 +62,9 @@ function bfs(start, target) {
         for (p of possiblePoses)
             if (!isOutOfBounds(p) && !matrix[p.x][p.y]) {
                 p.parent = current
+                p.stage = current.stage + 1 || 1
                 frontier.push(p)
             }
-
-        stage++
     }
 }
 
@@ -77,8 +77,8 @@ function knightMoves(current, target) {
     }
 
     const result = bfs(current, target)
-
-    return result
+    console.log(`You made it in ${result.steps} moves!  Here's your path:`)
+    result.path.forEach((p) => console.log(p))
 }
 
-console.log(knightMoves({ x: 0, y: 0 }, { x: 1, y: 2 }))
+knightMoves(new Position(0, 0), new Position(7, 7))
